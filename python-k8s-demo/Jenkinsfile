@@ -12,13 +12,12 @@ pipeline {
             }
         }
 
-        stage('Build Docker Image') {
-            steps {
-                script {
-                    docker.build("${IMAGE_NAME}:${BUILD_NUMBER}")
-                }
-            }
-        }
+       stage('Build Docker Image') {
+    steps {
+        sh "docker build -t ${FULL_IMAGE} python-k8s-demo/"
+    }
+}
+
 
         stage('Push to GCR') {
             steps {
