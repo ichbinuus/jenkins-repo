@@ -6,12 +6,12 @@ pipeline {
         GCP_CREDENTIALS = credentials('73d05379-38c1-4f02-b431-736c922e71d6')
     }
 
-    stages {
-        stage('Checkout') {
-            steps {
-                git 'https://github.com/ichbinuus/jenkins-repo.git'
-            }
-        }
+    stage('Checkout') {
+    steps {
+        git branch: 'main', url: 'https://github.com/ichbinuus/jenkins-repo.git'
+    }
+}
+
 
         stage('Build Docker Image') {
             steps {
@@ -25,7 +25,7 @@ pipeline {
             steps {
                 script {
                     // Save GCP creds to a file
-                    writeFile file: 'key.json', text: GCP_CREDENTIALS
+                    writeFile file: 'jen-key.json', text: GCP_CREDENTIALS
                     sh '''
                         gcloud auth activate-service-account --key-file=jen-key.json
                         gcloud auth configure-docker -q
