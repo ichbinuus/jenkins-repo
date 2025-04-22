@@ -13,7 +13,7 @@ pipeline {
     stages {
         stage('Clone') {
             steps {
-                git url: 'https://github.com/ichbinuus/your-python-app.git', branch: 'main'
+                git url: 'https://github.com/ichbinuus/ekinox-repo.git', branch: 'main'
             }
         }
 
@@ -25,7 +25,7 @@ pipeline {
 
         stage('Push to GCR') {
             steps {
-                withCredentials([file(credentialsId: 'gcp-service-account', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
+                withCredentials([file(credentialsId: '73d05379-38c1-4f02-b431-736c922e71d6', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
                     sh 'gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS'
                     sh 'gcloud config set project ${PROJECT_ID}'
                     sh 'gcloud auth configure-docker'
@@ -36,7 +36,7 @@ pipeline {
 
         stage('Deploy to GKE') {
             steps {
-                withCredentials([file(credentialsId: 'gcp-service-account', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
+                withCredentials([file(credentialsId: '73d05379-38c1-4f02-b431-736c922e71d6', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
                     sh 'gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS'
                     sh "gcloud container clusters get-credentials ${CLUSTER} --region ${REGION}"
                     sh "kubectl set image deployment/python-k8s-deployment python-k8s=${FULL_IMAGE}"
