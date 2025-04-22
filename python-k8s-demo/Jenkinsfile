@@ -3,15 +3,14 @@ pipeline {
 
     environment {
         IMAGE_NAME = "gcr.io/rama17-05-2020/python-k8s-demo"
-        GCP_CREDENTIALS = credentials('73d05379-38c1-4f02-b431-736c922e71d6')
     }
 
-    stage('Checkout') {
-    steps {
-        git branch: 'main', url: 'https://github.com/ichbinuus/jenkins-repo.git'
-    }
-}
-
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/ichbinuus/jenkins-repo.git'
+            }
+        }
 
         stage('Build Docker Image') {
             steps {
@@ -23,11 +22,9 @@ pipeline {
 
         stage('Push to GCR') {
             steps {
-                script {
-                    // Save GCP creds to a file
-                    writeFile file: 'jen-key.json', text: GCP_CREDENTIALS
+                withCredentials([file(credentialsId: '73d05379-38c1-4f02-b431-736c922e71d6', variable: 'GCP_KEY')]) {
                     sh '''
-                        gcloud auth activate-service-account --key-file=jen-key.json
+                        gcloud auth activate-service-account --key-file=$GCP_KEY
                         gcloud auth configure-docker -q
                         docker push ${IMAGE_NAME}:${BUILD_NUMBER}
                     '''
