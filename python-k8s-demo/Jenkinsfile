@@ -1,0 +1,38 @@
+pipeline {
+    agent any
+
+    environment {
+        PROJECT_ID = 'your-gcp-project-id'
+        IMAGE_NAME = "gcr.io/${PROJECT_ID}/python-k8s-demo"
+        CLUSTER = 'your-gke-cluster-name'
+        ZONE = 'your-cluster-zone'
+    }
+
+    stages {
+        stage('Clone') {
+            steps {
+                git url: 'https://github.com/yourusername/your-python-app.git', branch: 'main'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                sh "docker build -t ${IMAGE_NAME} ."
+            }
+        }
+
+        stage('Push to GCR') {
+            steps {
+                sh "gcloud auth configure-docker"
+                sh "docker push ${IMAGE_NAME}"
+            }
+        }
+
+        stage('Deploy to GKE') {
+            steps {
+                sh "gcloud container clusters get-credentials ${CLUSTER} --zone ${ZONE}"
+                sh "kubectl set image deployment/python-k8s-deployment python-k8s=${IMAGE_NAME} || kubectl apply -f k8s/"
+            }
+        }
+    }
+}
