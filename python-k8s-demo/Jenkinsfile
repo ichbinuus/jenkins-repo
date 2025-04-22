@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         IMAGE_NAME = "gcr.io/rama17-05-2020/python-k8s-demo"
-        GCP_CREDENTIALS = credentials('gcp-creds')
+        GCP_CREDENTIALS = credentials('jen-key.json')
     }
 
     stages {
