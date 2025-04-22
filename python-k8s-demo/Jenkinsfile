@@ -2,44 +2,35 @@ pipeline {
     agent any
 
     environment {
-        PROJECT_ID = 'rama17-05-2020'
-        IMAGE_NAME = "gcr.io/${PROJECT_ID}/python-k8s-demo"
-        TAG = "${BUILD_NUMBER}"
-        FULL_IMAGE = "${IMAGE_NAME}:${TAG}"
-        CLUSTER = 'cluster-1'
-        REGION = 'asia-south1'
+        IMAGE_NAME = "gcr.io/rama17-05-2020/python-k8s-demo"
+        GCP_CREDENTIALS = credentials('gcp-creds')
     }
 
-    stage('Clone') {
-    steps {
-        git url: 'https://github.com/ichbinuus/ekinox-repo.git', branch: 'main'
-    }
-}
-
+    stages {
+        stage('Checkout') {
+            steps {
+                git 'https://github.com/ichbinuus/jenkins-repo.git'
+            }
+        }
 
         stage('Build Docker Image') {
             steps {
-                sh "docker build -t ${FULL_IMAGE} ."
+                script {
+                    docker.build("${IMAGE_NAME}:${BUILD_NUMBER}")
+                }
             }
         }
 
         stage('Push to GCR') {
             steps {
-                withCredentials([file(credentialsId: '73d05379-38c1-4f02-b431-736c922e71d6', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
-                    sh 'gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS'
-                    sh 'gcloud config set project ${PROJECT_ID}'
-                    sh 'gcloud auth configure-docker'
-                    sh "docker push ${FULL_IMAGE}"
-                }
-            }
-        }
-
-        stage('Deploy to GKE') {
-            steps {
-                withCredentials([file(credentialsId: '73d05379-38c1-4f02-b431-736c922e71d6', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
-                    sh 'gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS'
-                    sh "gcloud container clusters get-credentials ${CLUSTER} --region ${REGION}"
-                    sh "kubectl set image deployment/python-k8s-deployment python-k8s=${FULL_IMAGE}"
+                script {
+                    // Save GCP creds to a file
+                    writeFile file: 'key.json', text: GCP_CREDENTIALS
+                    sh '''
+                        gcloud auth activate-service-account --key-file=jen-key.json
+                        gcloud auth configure-docker -q
+                        docker push ${IMAGE_NAME}:${BUILD_NUMBER}
+                    '''
                 }
             }
         }
