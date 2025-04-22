@@ -10,6 +10,13 @@ pipeline {
         REGION = 'asia-south1'
     }
 
+    stage('Clone') {
+    steps {
+        git url: 'https://github.com/ichbinuus/ekinox-repo.git', branch: 'main'
+    }
+}
+
+
         stage('Build Docker Image') {
             steps {
                 sh "docker build -t ${FULL_IMAGE} ."
