@@ -3,7 +3,9 @@ pipeline {
 
     environment {
         PROJECT_ID = 'rama17-05-2020'
-        IMAGE_NAME = "gcr.io/rama17-05-2020/python-k8s-demo"
+        IMAGE_NAME = "gcr.io/${PROJECT_ID}/python-k8s-demo"
+        TAG = "${BUILD_NUMBER}"
+        FULL_IMAGE = "${IMAGE_NAME}:${TAG}"
         CLUSTER = 'cluster-1'
         REGION = 'asia-south1'
     }
@@ -17,21 +19,28 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh "docker build -t ${IMAGE_NAME} ."
+                sh "docker build -t ${FULL_IMAGE} ."
             }
         }
 
         stage('Push to GCR') {
             steps {
-                sh "gcloud auth configure-docker"
-                sh "docker push ${IMAGE_NAME}"
+                withCredentials([file(credentialsId: 'gcp-service-account', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
+                    sh 'gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS'
+                    sh 'gcloud config set project ${PROJECT_ID}'
+                    sh 'gcloud auth configure-docker'
+                    sh "docker push ${FULL_IMAGE}"
+                }
             }
         }
 
         stage('Deploy to GKE') {
             steps {
-                sh "gcloud container clusters get-credentials ${CLUSTER} --region ${REGION}"
-                sh "kubectl set image deployment/python-k8s-deployment python-k8s=${IMAGE_NAME} || kubectl apply -f k8s/"
+                withCredentials([file(credentialsId: 'gcp-service-account', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
+                    sh 'gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS'
+                    sh "gcloud container clusters get-credentials ${CLUSTER} --region ${REGION}"
+                    sh "kubectl set image deployment/python-k8s-deployment python-k8s=${FULL_IMAGE}"
+                }
             }
         }
     }
