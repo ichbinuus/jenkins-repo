@@ -22,7 +22,7 @@ pipeline {
 
         stage('Push to GCR') {
             steps {
-                withCredentials([file(credentialsId: '73d05379-38c1-4f02-b431-736c922e71d6', variable: 'GCP_KEY')]) {
+                withCredentials([file(credentialsId: '3d6f17f4-833c-4f0d-a3a5-e7b112e36973', variable: 'GCP_KEY')]) {
                     sh '''
                         gcloud auth activate-service-account --key-file=$GCP_KEY
                         gcloud auth configure-docker -q
