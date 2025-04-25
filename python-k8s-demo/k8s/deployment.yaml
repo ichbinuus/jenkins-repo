@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
       - name: app
-        image: asia-south1-docker.pkg.dev/rama17-05-2020/python-k8s-demo/python-k8s-demo:10
+        image: IMAGE_PLACEHOLDER
         ports:
         - containerPort: 5000
