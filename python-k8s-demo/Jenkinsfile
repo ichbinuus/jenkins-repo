@@ -19,21 +19,29 @@ pipeline {
         sh "docker build -t ${FULL_IMAGE} python-k8s-demo/"
     }
 }
-        stage('Deploy to GKE') {
+       stage('Deploy to GKE') {
     steps {
-        wwithCredentials([file(credentialsId: '5769dcb1-ff48-4f73-a6f7-6ed8b47009dd', variable: 'GCP_KEY')]) {
+        withCredentials([file(credentialsId: 'your-gcp-key-id', variable: 'GCP_KEY')]) {
             sh '''
+                echo "🔐 Authenticating with GCP..."
                 gcloud auth activate-service-account --key-file=$GCP_KEY
                 gcloud config set project rama17-05-2020
                 gcloud config set compute/region asia-south1
                 gcloud container clusters get-credentials cluster-1 --region asia-south1
 
+                echo "🔧 Updating image in deployment file..."
+                sed -i "s|IMAGE_PLACEHOLDER|${FULL_IMAGE}|" python-k8s-demo/k8s/deployment.yaml
+
+                echo "🚀 Applying Kubernetes manifests..."
                 kubectl apply -f python-k8s-demo/k8s/deployment.yaml
                 kubectl apply -f python-k8s-demo/k8s/service.yaml
+
+                echo "✅ Deployment triggered!"
             '''
         }
     }
 }
+
 
 
         stage('Push to GCR') {
