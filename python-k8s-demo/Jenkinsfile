@@ -26,7 +26,7 @@ pipeline {
                 withCredentials([file(credentialsId: '5769dcb1-ff48-4f73-a6f7-6ed8b47009dd', variable: 'GCP_KEY')]) {
                     sh '''
                         gcloud auth activate-service-account --key-file=$GCP_KEY
-                        gcloud auth configure-docker -q
+                          gcloud auth configure-docker asia-south1-docker.pkg.dev -q
                         docker push ${IMAGE_NAME}:${BUILD_NUMBER}
                     '''
                 }
