@@ -13,7 +13,7 @@ spec:
         app: python-k8s
     spec:
       containers:
-      - name: python-k8s
+      - name: app
         image: asia-south1-docker.pkg.dev/rama17-05-2020/python-k8s-demo/python-k8s-demo:10
         ports:
         - containerPort: 5000
