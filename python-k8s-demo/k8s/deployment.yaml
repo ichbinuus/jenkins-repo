@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
       - name: python-k8s
-        image: gcr.io/YOUR_PROJECT_ID/python-k8s-demo
+        image: gcr.io/rama17-05-2020/python-k8s-demo
         ports:
         - containerPort: 5000
