@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
       - name: python-k8s
-        image: gcr.io/rama17-05-2020/python-k8s-demo
+        image: asia-south1-docker.pkg.dev/rama17-05-2020/python-k8s-demo/python-k8s-demo:10
         ports:
         - containerPort: 5000
