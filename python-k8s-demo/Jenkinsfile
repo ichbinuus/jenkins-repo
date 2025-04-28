@@ -21,7 +21,7 @@ pipeline {
 }
        stage('Deploy to GKE') {
     steps {
-        withCredentials([file(credentialsId: 'e7589acf-8c15-4292-a3dc-923f069761be', variable: 'GCP_KEY')]) {
+        withCredentials([file(credentialsId: 'd3b3f50e-b703-44cf-9890-1863036ce387', variable: 'GCP_KEY')]) {
             sh '''
                 echo "🔐 Authenticating with GCP..."
                 gcloud auth activate-service-account --key-file=$GCP_KEY
@@ -46,7 +46,7 @@ pipeline {
 
         stage('Push to GCR') {
             steps {
-                withCredentials([file(credentialsId: 'e7589acf-8c15-4292-a3dc-923f069761be', variable: 'GCP_KEY')]) {
+                withCredentials([file(credentialsId: 'd3b3f50e-b703-44cf-9890-1863036ce387', variable: 'GCP_KEY')]) {
                     sh '''
                         gcloud auth activate-service-account --key-file=$GCP_KEY
                           gcloud auth configure-docker asia-south1-docker.pkg.dev -q
