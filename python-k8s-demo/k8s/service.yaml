@@ -3,10 +3,11 @@ kind: Service
 metadata:
   name: python-k8s-service
 spec:
-  type: LoadBalancer    # Important!
+  type: NodePort    # Important!
   selector:
     app: python-k8s
   ports:
     - protocol: TCP
       port: 80
       targetPort: 5000
+      nodePort: 30007
