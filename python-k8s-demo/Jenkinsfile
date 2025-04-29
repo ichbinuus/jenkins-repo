@@ -27,7 +27,7 @@ pipeline {
                 gcloud auth activate-service-account --key-file=$GCP_KEY
                 gcloud config set project rama17-05-2020
                 gcloud config set compute/region asia-south1
-                gcloud container clusters get-credentials cluster-1 --region asia-south1
+                gcloud container clusters get-credentials cluster --region asia-south1
 
                 echo "🔧 Updating image in deployment file..."
                 sed -i "s|IMAGE_PLACEHOLDER|${FULL_IMAGE}|" python-k8s-demo/k8s/deployment.yaml
